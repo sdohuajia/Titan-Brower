@@ -1,0 +1,19 @@
+{
+  "name": "titan-node-bot",
+  "version": "1.1.0",
+  "description": "titan节点",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "vikitoshi",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "https-proxy-agent": "^7.0.4",
+    "random-useragent": "^0.5.0",
+    "uuid": "^9.0.1",
+    "ws": "^8.17.0"
+  }
+}
