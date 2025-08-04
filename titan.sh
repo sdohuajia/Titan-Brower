@@ -59,13 +59,6 @@ else
     echo "npm 已安装，版本: $(npm -v)"
 fi
 
-# 更新 npm 全局包
-echo "正在更新 npm 全局包..."
-if ! npm update -g; then
-    echo "错误：无法更新 npm 全局包，请检查网络或权限"
-    exit 1
-fi
-
 # 克隆仓库
 echo "正在克隆 Titan-Brower 仓库..."
 if ! git clone https://github.com/sdohuajia/Titan-Brower.git; then
