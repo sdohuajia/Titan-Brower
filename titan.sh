@@ -114,31 +114,57 @@ else
     echo "警告：proxy.txt 为空，未保存任何有效代理"
 fi
 
-# 提示用户输入 Token
-echo "请输入 Token（每输入一个按回车，输入完成后按 Ctrl+D 或空行回车结束），将保存为 REFRESH_TOKEN=token 格式到 .env 文件："
+# 提示用户输入账号和密码
+echo "请输入账号和密码（格式：Email 后按回车，然后输入 Password 后按回车），每组账号密码输入完成后继续下一组，输入完成后按 Ctrl+D 或空行回车结束："
 
-# 清空或创建 .env 文件
-> .env
+# 清空或创建 accounts.json 文件
+echo "[]" > accounts.json
 
-# 计数器，用于标记 REFRESH_TOKEN 的序号
-count=1
+# 临时存储账号列表
+accounts=()
 
-# 循环读取用户输入并写入 .env
-while IFS= read -r token; do
-    # 如果输入为空行，退出循环
-    [ -z "$token" ] && break
-    # 写入 .env 文件，格式为 REFRESH_TOKEN_1=token
-    echo "REFRESH_TOKEN_$count=$token" >> .env
-    echo "已添加 Token：REFRESH_TOKEN_$count=$token"
-    ((count++))
+# 循环读取用户输入的 Email 和 Password
+while true; do
+    echo "请输入 Email（包含@符号）："
+    IFS= read -r email
+    # 如果 Email 为空，退出循环
+    [ -z "$email" ] && break
+    # 验证 Email 格式（简单检查是否包含 @）
+    if [[ "$email" =~ ^[^@]+@[^@]+$ ]]; then
+        echo "请输入 Password："
+        IFS= read -r password
+        # 如果 Password 为空，提示错误并重新输入当前账号
+        if [ -z "$password" ]; then
+            echo "错误：密码不能为空，请重新输入此账号的 Email 和 Password"
+            continue
+        fi
+        # 添加到 accounts 数组
+        accounts+=("{\"Email\": \"$email\", \"Password\": \"$password\"}")
+        echo "已添加账号：Email=$email, Password=$password"
+    else
+        echo "错误：Email 格式不正确（必须包含@符号），请重新输入"
+        continue
+    fi
 done
 
-# 检查是否成功写入 .env
-if [ -s .env ]; then
-    echo "Token 已保存到 .env"
-    cat .env
+# 将 accounts 数组写入 accounts.json
+if [ ${#accounts[@]} -gt 0 ]; then
+    # 构造 JSON 数组
+    json_array=$(printf ",%s" "${accounts[@]}")
+    json_array="[${json_array:1}]" # 移除开头的逗号并包裹在 []
+    echo "$json_array" > accounts.json
+    echo "账号已保存到 accounts.json"
+    cat accounts.json
 else
-    echo "警告：.env 为空，未保存任何 Token"
+    echo "警告：accounts.json 为空，未保存任何账号"
+fi
+
+# 启动 screen 会话并运行 npm start
+echo "正在启动 screen 会话 'titan' 并运行 npm start..."
+if ! screen -S titan -dm bash -c "npm start"; then
+    echo "错误：无法启动 screen 会话或运行 npm start，请检查 screen 和 npm 配置"
+    exit 1
 fi
 
 echo "脚本执行完成！"
+echo "Titan 脚本已在 screen 会话 'titan' 中运行，使用 'screen -r titan' 查看或管理会话"
