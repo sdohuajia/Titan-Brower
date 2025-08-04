@@ -43,7 +43,7 @@ class Titan {
   welcome() {
     console.log(
       `${chalk.greenBright('Titan节点 ')}${chalk.blueBright('自动机器人')}\n` +
-      `${chalk.greenBright('Rey？ ')}${chalk.yellowBright('<水印>')}`
+      `${chalk.greenBright('ferdie ')}${chalk.yellowBright('<titan>')}`
     );
   }
 
